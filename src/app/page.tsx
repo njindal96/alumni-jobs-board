@@ -40,6 +40,89 @@ type Job = {
   email_link: string;
 };
 
+const ApplyButton = ({ job }: { job: Job }) => {
+  const [showInstructions, setShowInstructions] = useState(false);
+  const link = job.application_link?.trim();
+
+  // Common Styles
+  const primaryBtnClass = "px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-1.5 shrink-0";
+  const secondaryIconClass = "w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center transition-colors border border-white/10 text-gray-300 hover:text-white shrink-0";
+  const secondaryTextClass = "px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shrink-0";
+
+  // State 4: Null or missing
+  if (!link) {
+    if (!job.email_link) return null;
+    return (
+      <a href={job.email_link} target="_blank" rel="noreferrer" className={primaryBtnClass}>
+        View Original Email <ExternalLink className="w-3 h-3" />
+      </a>
+    );
+  }
+
+  const isWebLink = link.startsWith("http://") || link.startsWith("https://");
+  const isEmail = link.includes("@") && !link.startsWith("http");
+
+  // State 1: Standard web link
+  if (isWebLink) {
+    return (
+      <div className="flex gap-2">
+        {job.email_link && (
+          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
+            <Mail className="w-4 h-4" />
+          </a>
+        )}
+        <a href={link} target="_blank" rel="noreferrer" className={primaryBtnClass}>
+          Apply Now <ExternalLink className="w-3 h-3" />
+        </a>
+      </div>
+    );
+  }
+
+  // State 2: Email address
+  if (isEmail) {
+    const extractedEmailMatch = link.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+    const emailAddress = extractedEmailMatch ? extractedEmailMatch[0] : link;
+    const mailtoHref = `mailto:${emailAddress}`;
+    
+    return (
+      <div className="flex gap-2">
+        {job.email_link && (
+          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        )}
+        <a href={mailtoHref} className={primaryBtnClass}>
+          Email to Apply <Mail className="w-3 h-3" />
+        </a>
+      </div>
+    );
+  }
+
+  // State 3: Plain text instructions
+  return (
+    <div className="flex flex-col items-end w-full">
+      <div className="flex gap-2">
+        {job.email_link && (
+          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
+            <Mail className="w-4 h-4" />
+          </a>
+        )}
+        <button onClick={() => setShowInstructions(!showInstructions)} className={secondaryTextClass}>
+          View Instructions
+        </button>
+      </div>
+      
+      {/* Expandable Instructions Section */}
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out w-full mt-3 ${showInstructions ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+        <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-500/20 text-xs text-blue-200 text-left">
+          <strong className="text-white block mb-1">How to apply:</strong>
+          <span className="leading-relaxed whitespace-pre-wrap">{link}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function JobsBoard() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -341,32 +424,15 @@ export default function JobsBoard() {
                     )}
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      {timeAgo(job.created_at)}
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      {job.email_link && (
-                        <a 
-                          href={job.email_link} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center transition-colors border border-white/10 text-gray-300 hover:text-white"
-                          title="Original Email"
-                        >
-                          <Mail className="w-4 h-4" />
-                        </a>
-                      )}
-                      <a 
-                        href={job.application_link || job.email_link || "#"} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-1.5"
-                      >
-                        Apply <ExternalLink className="w-3 h-3" />
-                      </a>
+                  <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
+                    <div className="flex items-start justify-between w-full">
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-1.5 shrink-0">
+                        <Clock className="w-3.5 h-3.5" />
+                        {timeAgo(job.created_at)}
+                      </div>
+                      <div className="flex-1 flex justify-end ml-4">
+                        <ApplyButton job={job} />
+                      </div>
                     </div>
                   </div>
 
