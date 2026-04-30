@@ -46,7 +46,6 @@ const ApplyButton = ({ job }: { job: Job }) => {
 
   // Common Styles
   const primaryBtnClass = "px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-1.5 shrink-0";
-  const secondaryIconClass = "w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center transition-colors border border-white/10 text-gray-300 hover:text-white shrink-0";
   const secondaryTextClass = "px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shrink-0";
 
   // State 4: Null or missing
@@ -54,7 +53,7 @@ const ApplyButton = ({ job }: { job: Job }) => {
     if (!job.email_link) return null;
     return (
       <a href={job.email_link} target="_blank" rel="noreferrer" className={primaryBtnClass}>
-        View Original Email <ExternalLink className="w-3 h-3" />
+        View Original Thread <ExternalLink className="w-3 h-3" />
       </a>
     );
   }
@@ -65,16 +64,9 @@ const ApplyButton = ({ job }: { job: Job }) => {
   // State 1: Standard web link
   if (isWebLink) {
     return (
-      <div className="flex gap-2">
-        {job.email_link && (
-          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
-            <Mail className="w-4 h-4" />
-          </a>
-        )}
-        <a href={link} target="_blank" rel="noreferrer" className={primaryBtnClass}>
-          Apply Now <ExternalLink className="w-3 h-3" />
-        </a>
-      </div>
+      <a href={link} target="_blank" rel="noreferrer" className={primaryBtnClass}>
+        Apply Now <ExternalLink className="w-3 h-3" />
+      </a>
     );
   }
 
@@ -85,32 +77,18 @@ const ApplyButton = ({ job }: { job: Job }) => {
     const mailtoHref = `mailto:${emailAddress}`;
     
     return (
-      <div className="flex gap-2">
-        {job.email_link && (
-          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        )}
-        <a href={mailtoHref} className={primaryBtnClass}>
-          Email to Apply <Mail className="w-3 h-3" />
-        </a>
-      </div>
+      <a href={mailtoHref} className={primaryBtnClass}>
+        Email to Apply <Mail className="w-3 h-3" />
+      </a>
     );
   }
 
   // State 3: Plain text instructions
   return (
     <div className="flex flex-col items-end w-full">
-      <div className="flex gap-2">
-        {job.email_link && (
-          <a href={job.email_link} target="_blank" rel="noreferrer" className={secondaryIconClass} title="Original Email">
-            <Mail className="w-4 h-4" />
-          </a>
-        )}
-        <button onClick={() => setShowInstructions(!showInstructions)} className={secondaryTextClass}>
-          View Instructions
-        </button>
-      </div>
+      <button onClick={() => setShowInstructions(!showInstructions)} className={secondaryTextClass}>
+        View Instructions
+      </button>
       
       {/* Expandable Instructions Section */}
       <div className={`overflow-hidden transition-all duration-300 ease-in-out w-full mt-3 ${showInstructions ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
@@ -424,15 +402,41 @@ export default function JobsBoard() {
                     )}
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-3">
-                    <div className="flex items-start justify-between w-full">
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-1.5 shrink-0">
+                  <div className="mt-auto pt-4 border-t border-white/10 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      
+                      {/* Job Poster & Original Thread Link */}
+                      {job.email_link ? (
+                        <a href={job.email_link} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 group cursor-pointer hover:bg-white/5 p-1.5 -ml-1.5 rounded-lg transition-colors flex-1 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold text-xs group-hover:bg-blue-500 transition-colors shrink-0">
+                            {job.job_poster?.charAt(0).toUpperCase() || "?"}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold group-hover:text-blue-400 transition-colors">Original Thread</span>
+                            <span className="text-xs text-gray-300 truncate">{job.job_poster || "Alumni"}</span>
+                          </div>
+                        </a>
+                      ) : (
+                        <div className="flex items-center gap-2.5 p-1.5 -ml-1.5 flex-1 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-gray-400 font-semibold text-xs shrink-0">
+                            {job.job_poster?.charAt(0).toUpperCase() || "?"}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Posted By</span>
+                            <span className="text-xs text-gray-300 truncate">{job.job_poster || "Alumni"}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Time Ago */}
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 shrink-0 ml-2">
                         <Clock className="w-3.5 h-3.5" />
                         {timeAgo(job.created_at)}
                       </div>
-                      <div className="flex-1 flex justify-end ml-4">
-                        <ApplyButton job={job} />
-                      </div>
+                    </div>
+
+                    <div className="flex-1 flex justify-end">
+                      <ApplyButton job={job} />
                     </div>
                   </div>
 
