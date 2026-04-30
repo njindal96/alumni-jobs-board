@@ -1,60 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #f0f0f0;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #f9fafb;
+  --border: #e2e4e8;
+  --border-strong: #c8ccd4;
+  --text: #111318;
+  --text-2: #3d4149;
+  --text-3: #6b7280;
+  --accent: oklch(50% 0.2 255);
+  --accent-light: oklch(95% 0.05 255);
+  --tag-bg: #edeef1;
+  --tag-text: #3d4149;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), sans-serif;
 }
 
-/* Custom Scrollbar for a premium feel */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--border-strong);
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.glass-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* Subtle glow effects */
-.glow-purple {
-  box-shadow: 0 0 40px rgba(168, 85, 247, 0.15);
-}
-.glow-blue {
-  box-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
+::selection {
+  background: var(--accent-light);
+  color: var(--accent);
 }
