@@ -20,6 +20,8 @@ type Job = {
   job_poster: string;
   application_link: string;
   email_link: string;
+  job_description: string | null;
+  salary_range: string | null;
 };
 
 type Filters = {
@@ -594,6 +596,11 @@ const DetailView = ({
           <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--text-3)" }}>
             <IconClock />Posted {timeAgo(job.created_at)}
           </span>
+          {job.salary_range && (
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-2)", background: "var(--tag-bg)", borderRadius: 6, padding: "2px 9px" }}>
+              {job.salary_range}
+            </span>
+          )}
           {job.job_poster && (
             <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--text-3)" }}>
               <span style={{
@@ -653,9 +660,15 @@ const DetailView = ({
       {/* About the Role */}
       <div style={{ marginBottom: 24 }}>
         <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 10 }}>About the Role</h3>
-        <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-3)", fontStyle: "italic" }}>
-          Details weren&apos;t included in the original email. Reach out directly to learn more and apply.
-        </p>
+        {job.job_description ? (
+          <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-2)" }}>
+            {job.job_description}
+          </p>
+        ) : (
+          <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-3)", fontStyle: "italic" }}>
+            Details weren&apos;t included in the original email. Reach out directly to learn more and apply.
+          </p>
+        )}
       </div>
     </div>
   );
